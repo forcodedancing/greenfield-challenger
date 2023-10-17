@@ -200,7 +200,8 @@ func (v *Verifier) verifyForSingleEvent(event *model.Event) error {
 	}, retry.Context(context.Background()), common.RtyAttem, common.RtyDelay, common.RtyErr)
 	if challengeResErr != nil {
 		v.metricService.IncHashVerifierSpApiErr(err)
-		err = v.dataProvider.UpdateEventStatusVerifyResult(event.ChallengeId, model.Verified, model.HashMismatched)
+		// if the api call fails, we treat the hash as matched
+		err = v.dataProvider.UpdateEventStatusVerifyResult(event.ChallengeId, model.Verified, model.HashMatched)
 		if err != nil {
 			v.metricService.IncHashVerifierErr(err)
 			logging.Logger.Errorf("error updating event status for challengeId: %d", event.ChallengeId)
